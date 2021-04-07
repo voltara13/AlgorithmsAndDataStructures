@@ -64,15 +64,7 @@ void linear_structures()
 						}
 					}
 				}
-
-				for (int i = 0; i < size - 1; ++i)
-					if (array[i] == -1 && array[i + 1] != -1)
-					{
-						for (int j = i; j < size - 1; ++j)
-							array[j] = array[j + 1];
-						i = -1;
-					}
-
+				shift();
 			}
 		}
 
@@ -83,10 +75,25 @@ void linear_structures()
 				const int index = position - 1;
 
 				if (array[index] != -1)
+				{
 					array[index] = -1;
-
+					shift();
+				}
 				else
 					std::cout << "В указанной позиции нет элементов\n";
+			}
+		}
+
+		void shift()
+		{
+			for (int i = 0; i < size - 1; ++i)
+			{
+				if (array[i] == -1 && array[i + 1] != -1)
+				{
+					for (int j = i; j < size - 1; ++j)
+						array[j] = array[j + 1];
+					i = -1;
+				}
 			}
 		}
 
