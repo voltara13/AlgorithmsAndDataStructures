@@ -1,6 +1,6 @@
 #include <iostream>
 
-#define EX1
+#define EX2
 
 #ifdef EX1
 constexpr int size = 10;
@@ -151,21 +151,16 @@ void linear_structures()
 
 		static dynamic_structure* add_elm(const int& value, dynamic_structure* head)
 		{
-			dynamic_structure* new_elm = new dynamic_structure(value), * ptr = head;
-			if (head == nullptr) return new_elm;
-			while (ptr->next)
-				ptr = ptr->next;
-			ptr->next = new_elm;
+			dynamic_structure* new_elm = new dynamic_structure(value);
+			new_elm->next = head->next;
+			head->next = new_elm;
 			return head;
 		}
 
 		static dynamic_structure* delete_elm(dynamic_structure* head)
 		{
-			if (head == nullptr) return head;
-			dynamic_structure* ptr = head;
-			while (ptr->next->next)
-				ptr = ptr->next;
-			ptr->next = nullptr;
+			if (head->next == nullptr) return head;
+			head->next = head->next->next;
 			return head;
 		}
 
@@ -173,7 +168,7 @@ void linear_structures()
 		{
 			std::cout << "¬ведите элементы" << std::endl;
 			int value;
-			dynamic_structure* head = nullptr;
+			dynamic_structure* head = new dynamic_structure;
 			for (int i = 0; i < size; i++)
 			{
 				std::cin >> value;
@@ -184,7 +179,7 @@ void linear_structures()
 
 		static void print(dynamic_structure* head)
 		{
-			dynamic_structure* ptr = head;
+			dynamic_structure* ptr = head->next;
 			while (ptr != nullptr)
 			{
 				std::cout << ptr->value << std::endl;
