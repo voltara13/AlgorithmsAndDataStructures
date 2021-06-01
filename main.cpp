@@ -5,7 +5,7 @@
 #include <string>
 
 #define HASH2
-
+//
 struct hash_row
 {
     std::string product_name;
