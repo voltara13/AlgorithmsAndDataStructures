@@ -1,0 +1,12 @@
+cashews 8.58
+cookies_pepperidge_farm_milano 2.99
+crackers_goldfish 5.98
+crackers_ritz 2.89
+deodorant_dove 4.88
+oatmeal 2.38
+paper_towels 12.99
+peanut_butter_jif 5.82
+crackers_goldfish 7
+sunscreen_neutrogena_ultra_sheer 7.97
+trash_bgs_kitchen 3.40
+ziploc_gallon_bgs 3.99

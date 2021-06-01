@@ -1,218 +1,102 @@
+#include <fstream>
 #include <iostream>
+#include <utility>
+#include <bitset>
+#include <string>
 
-#define EX2
+#define HASH2
 
-#ifdef EX1
-constexpr int size = 10;
-
-void linear_structures()
+struct hash_row
 {
-	struct static_structure
-	{
+    std::string product_name;
+    double product_cost;
+    hash_row* next = nullptr;
+	hash_row(std::string product_name, const double& product_cost) :
+        product_name(std::move(product_name)), product_cost(product_cost) {}
+};
 
-		int array[size]{};
-
-		static_structure()
-		{
-			for (int& i : array)
-				i = -1;
-		}
-
-		int get_free_index(const int& index)
-		{
-			int return_index = -1;
-
-			for (int i = 0; i < size; ++i)
-				if (array[i] == -1 && (return_index == -1 || abs(index - i) < abs(index - return_index)))
-					return_index = i;
-
-			return return_index;
-		}
-
-		void add_elm(const int& value, const int& position)
-		{
-			if (check(position))
-			{
-				const int index = position - 1;
-
-				if (array[index] == -1)
-					array[index] = value;
-
-				else
-				{
-					const int free_index = get_free_index(index);
-
-					if (free_index == -1)
-						std::cout << "Нет свободного места\n";
-
-					else
-					{
-						if (free_index < index)
-						{
-							for (int i = free_index; i < index; ++i)
-								array[i] = array[i + 1];
-
-							array[index] = value;
-						}
-
-						else
-						{
-							for (int i = free_index; i > index; --i)
-								array[i] = array[i - 1];
-
-							array[index] = value;
-						}
-					}
-				}
-				shift();
-			}
-		}
-
-		void delete_elm(const int& position)
-		{
-			if (check(position))
-			{
-				const int index = position - 1;
-
-				if (array[index] != -1)
-				{
-					array[index] = -1;
-					shift();
-				}
-				else
-					std::cout << "В указанной позиции нет элементов\n";
-			}
-		}
-
-		void shift()
-		{
-			for (int i = 0; i < size - 1; ++i)
-			{
-				if (array[i] == -1 && array[i + 1] != -1)
-				{
-					for (int j = i; j < size - 1; ++j)
-						array[j] = array[j + 1];
-					i = -1;
-				}
-			}
-		}
-
-		void print()
-		{
-			for (int& i : array)
-				if (i != -1)
-					std::cout << i << std::endl;
-		}
-
-		static bool check(const int& position)
-		{
-			if (position < 1 || position > size)
-			{
-				std::cout << "Позиция за пределами массива\n";
-				return false;
-			}
-			return true;
-		}
-	};
-
-	static_structure structureArray;
-
-	structureArray.add_elm(3, 3);
-	structureArray.add_elm(2, 2);
-	structureArray.add_elm(6, 3);
-	structureArray.add_elm(8, 4);
-	structureArray.add_elm(81, 5);
-	structureArray.add_elm(10, 6);
-	structureArray.add_elm(33, 7);
-	std::cout << "Массив:\n";
-	structureArray.print();
-
-	structureArray.add_elm(100, 6);
-	std::cout << "Массив после добавления элемента на шестую позицию:\n";
-	structureArray.print();
-
-	structureArray.delete_elm(5);
-	std::cout << "Массив после удаления элемента на пятой позиции:\n";
-	structureArray.print();
-}
-
-#endif
-#ifdef EX2
-
-void linear_structures()
+struct hash_table
 {
-	struct dynamic_structure
-	{
-		int value;
-		dynamic_structure* next;
+    static inline int count_row;
+    static inline int count_collision;
+    hash_row* row = nullptr;
+};
 
-		explicit dynamic_structure(const int value = 0, dynamic_structure* next = nullptr)
-			: value(value), next(next) {}
-
-		static dynamic_structure* add_elm(const int& value, dynamic_structure* head)
-		{
-			dynamic_structure* new_elm = new dynamic_structure(value);
-			new_elm->next = head->next;
-			head->next = new_elm;
-			return head;
-		}
-
-		static dynamic_structure* delete_elm(dynamic_structure* head)
-		{
-			if (head->next == nullptr) return head;
-			head->next = head->next->next;
-			return head;
-		}
-
-		static dynamic_structure* create(const int& size)
-		{
-			std::cout << "Введите элементы" << std::endl;
-			int value;
-			dynamic_structure* head = new dynamic_structure;
-			for (int i = 0; i < size; i++)
-			{
-				std::cin >> value;
-				head = add_elm(value, head);
-			}
-			return head;
-		}
-
-		static void print(dynamic_structure* head)
-		{
-			dynamic_structure* ptr = head->next;
-			while (ptr != nullptr)
-			{
-				std::cout << ptr->value << std::endl;
-				ptr = ptr->next;
-			}
-		}
-	};
-
-	int size;
-	std::cout << "Введите размер списка: ";
-	std::cin >> size;
-
-	dynamic_structure* head = dynamic_structure::create(size);
-	std::cout << "Список:\n";
-	dynamic_structure::print(head);
-
-	int value;
-	std::cout << "Введите добавляемый элемент: ";
-	std::cin >> value;
-	dynamic_structure::add_elm(value, head);
-	std::cout << "После добавления:\n";
-	dynamic_structure::print(head);
-
-	dynamic_structure::delete_elm(head);
-	std::cout << "После удаления:\n";
-	dynamic_structure::print(head);
+void add_row(hash_table* hash_table, hash_row* hash_row, const int& hash)
+{
+    if (hash_table[hash].row == nullptr)
+        hash_table[hash].row = hash_row;
+    else
+    {
+    	hash_table::count_collision++;
+        ::hash_row* hash_row_temp = hash_table[hash].row;
+        while (hash_row_temp->next)
+            hash_row_temp = hash_row_temp->next;
+        hash_row_temp->next = hash_row;
+    }
 }
-
+#ifdef HASH1
+int get_hash(const std::string& str)
+{
+    unsigned __int64 hash = 0;
+    for (const auto& element : str)
+        hash += element;
+    return hash % hash_table::count_row;
+}
 #endif
+
+#ifdef HASH2
+int get_hash(const std::string& str)
+{
+    unsigned __int64 hash = 0;
+    int base = 1;
+    std::string hash_str;
+    for (const auto& element : str)
+        hash_str += std::bitset<8>(element).to_string();
+    for (int i = hash_str.length() - 1; i >= 0; i--) 
+    {
+        if (hash_str[i] == '1')
+            hash += base;
+        base *= 2;
+    }
+    return hash % hash_table::count_row;
+}
+#endif
+
+void read(hash_table** hash_table, const std::string& file_name)
+{
+    if (std::ifstream file(file_name); file.is_open())
+    {
+        hash_table::count_collision = 0;
+        hash_table::count_row = std::count(std::istreambuf_iterator<char>(file),
+            std::istreambuf_iterator<char>(), '\n');
+        *hash_table = new ::hash_table[hash_table::count_row];
+        file.clear();
+        file.seekg(std::ios::beg);
+        double product_cost;
+        std::string product_name;
+        while (file >> product_name >> product_cost)
+            add_row(
+                *hash_table,
+                new hash_row(product_name, product_cost),
+                get_hash(product_name));
+        file.close();
+    }
+    else
+		std::cout << "\nFailed open file " << file_name;
+}
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");
-	linear_structures();
-	return 0;
+    std::ofstream file("out_file.csv");
+	for (int i = 0; i < 10; ++i)
+	{
+        hash_table* hash_table = nullptr;
+        read(&hash_table, "price_list" + std::to_string(i) + ".txt");
+        file << hash_table::count_row << ";" << hash_table::count_collision << "\n";
+        delete hash_table;
+	}
+    file.close();
+    system("out_file.csv");
+    return 0;
 }
